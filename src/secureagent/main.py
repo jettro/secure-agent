@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, HTTPException, Security
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from pydantic import BaseModel
@@ -51,6 +52,19 @@ app = FastAPI(
         "clientId": "fastapi-client",
         "usePkceWithAuthorizationCodeGrant": True
     }
+)
+
+origins = [
+    "http://localhost:5173",    # React dev server
+    # Add your production URL as well, when deployed
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],      # Or specify ["GET", "POST"] etc.
+    allow_headers=["*"],      # Or specify, e.g., ["Authorization", "Content-Type"]
 )
 
 app.openapi = custom_openapi

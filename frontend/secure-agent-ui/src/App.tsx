@@ -17,7 +17,7 @@ function App() {
 
   return (
     <Router>
-      <nav className="navbar navbar-expand navbar-light bg-light mb-3">
+      <nav className="navbar navbar-expand navbar-light bg-light mb-3 fixed-top">
         <div className="container">
           <Link className="navbar-brand" to="/">MyApp</Link>
           <ul className="navbar-nav">
@@ -44,7 +44,10 @@ function App() {
             path="/dashboard"
             element={
               <PrivateRoute>
-                <Dashboard user={keycloak.tokenParsed?.preferred_username || 'Unknown'} />
+                <Dashboard
+                    user={keycloak.tokenParsed?.preferred_username || 'Unknown'}
+                    token={keycloak.token || ''}
+                />
               </PrivateRoute>
             }
           />
