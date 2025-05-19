@@ -27,4 +27,9 @@ This will start Keycloak on port 8080. You can access the Keycloak admin console
 16. Set a password for the user (e.g. `test`) and click "Set Password".
 17. Make sure to set "Temporary" to "Off" so the user can log in with the password you just set.
 
+Interesting blog post that might be usefull in the future:
+https://darkaico.medium.com/building-a-secure-authentication-system-with-keycloak-react-and-flask-35aeee04e37a
+
+
+
 ## Running the application
