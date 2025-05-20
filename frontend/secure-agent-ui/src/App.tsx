@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 
 import React from 'react';
+import { useAxiosAuth } from './auth/useAxiosAuth';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { keycloak } = useKeycloak();
@@ -12,6 +13,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
 function App() {
   const { keycloak, initialized } = useKeycloak();
+  useAxiosAuth();
 
   if (!initialized) return <div>Loading...</div>;
 

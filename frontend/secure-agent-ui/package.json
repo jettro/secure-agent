@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-keycloak/web": "^3.4.0",
+    "axios": "^1.9.0",
     "bootstrap": "^5.3.6",
     "keycloak-js": "^26.2.0",
     "react": "^19.1.0",

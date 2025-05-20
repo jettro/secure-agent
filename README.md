@@ -33,3 +33,9 @@ https://darkaico.medium.com/building-a-secure-authentication-system-with-keycloa
 
 
 ## Running the application
+
+# TODO
+- Implement Axios interceptor to add the access token to the request headers
+- Add a second application for the Agent to use
+- Add the agent in the service to answer the question of the user.
+- 

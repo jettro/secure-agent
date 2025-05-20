@@ -1,11 +1,12 @@
 import {useState} from "react";
+import {queryAgent} from "../api/agentService.ts";
 
 interface DashboardProps {
     user: string;
     token: string;
 }
 
-const Dashboard = ({user, token}: DashboardProps) => {
+const Dashboard = ({user}: DashboardProps) => {
     const [query, setQuery] = useState("");
     const [responses, setResponses] = useState<{ query: string; message: string }[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -15,30 +16,12 @@ const Dashboard = ({user, token}: DashboardProps) => {
 
         try {
             setError(null)
-            const body = {"query": query}
-            const response = await fetch("http://localhost:8000/query", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(body),
-            });
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    const errorData = await response.json();
-                    console.log(errorData);
-                    throw new Error(errorData.detail || "Unauthorized access");
-                }
-                throw new Error("Failed to fetch response");
-            }
-
-            const data = await response.json();
-            setResponses((prev) => [...prev, {query, message: data.response}]);
+            const message = await queryAgent(query);
+            setResponses((prev) => [...prev, {query, message: message}]);
             setQuery(""); // Clear the input
         } catch (error) {
-            setError(error.message || "An error occurred while fetching the response. Please try again.");
+            // @ts-expect-error The error does contain a message
+            setError(error?.message || "An error occurred while fetching the response. Please try again.");
             console.error("Error:", error);
         }
     };
