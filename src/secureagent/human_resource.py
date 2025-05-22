@@ -25,6 +25,7 @@ app = create_app(
 days_off_db = {
     "jettro": 10,
     "johndoe": 5,
+    "roberto": 15,
 }
 
 class DaysOffRequest(BaseModel):
@@ -52,6 +53,7 @@ async def days_off(token: str = Security(oauth2_scheme)):
     user_id = verify_token(token)
 
     if user_id not in days_off_db:
+        app_logger.warning(f"User {user_id} not found in database.")
         raise HTTPException(status_code=400, detail="User not found in database.")
 
     return {"days_off_available": days_off_db[user_id]}  # Placeholder value, replace with actual logic
@@ -65,6 +67,7 @@ async def days_off_for(days_off_request: DaysOffRequest, token: str = Security(o
     person_name = days_off_request.person_name
 
     if person_name not in days_off_db:
+        app_logger.warning(f"Person {person_name} not found in database.")
         raise HTTPException(status_code=400, detail=f"{person_name} not found in database.")
 
     return {"days_off_available": days_off_db[person_name], "person_name": person_name, "asked_by": user_id}

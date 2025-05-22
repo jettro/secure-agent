@@ -39,8 +39,3 @@ Running the application is as simple as running the following command:
 uvicorn secureagent.human_resource:app --reload --port 8001
 ```
 
-# TODO
-- Implement Axios interceptor to add the access token to the request headers
-- Add a second application for the Agent to use
-- Add the agent in the service to answer the question of the user.
-- 
