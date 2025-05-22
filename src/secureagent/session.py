@@ -1,4 +1,3 @@
-# At the top of your file
 from threading import Lock
 
 from semantic_kernel.contents import ChatHistory

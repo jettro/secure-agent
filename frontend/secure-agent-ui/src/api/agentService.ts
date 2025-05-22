@@ -2,7 +2,6 @@ import axiosInstance from "./axiosInstance";
 
 export const queryAgent = async (query: string): Promise<string> => {
     try {
-        // const body = {"query": query}
         const response = await axiosInstance.post(
             "/query",
             {query},

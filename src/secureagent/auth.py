@@ -1,3 +1,5 @@
+import logging
+
 import requests
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -6,9 +8,10 @@ from jose import jwt, JWTError
 from jose.utils import base64url_decode
 from jwt import ExpiredSignatureError
 
-from .config import KEYCLOAK_JWKS_URL, KEYCLOAK_ISSUER, AUDIENCE, KEYCLOAK_REALM
+from .config import KEYCLOAK_JWKS_URL, KEYCLOAK_ISSUER, AUDIENCE, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID
 
 # Keycloak authentication and JWT verification utilities for FastAPI.
+auth_logger = logging.getLogger("app.auth")
 
 # Cache the JWKS public keys
 _jwks = None
@@ -41,8 +44,10 @@ def construct_rsa_public_key(jwk: dict):
     return public_key
 
 
-def verify_token(token: str) -> str:
+def verify_token(token: str, requested_role: str = None) -> str:
     try:
+        auth_logger.debug(f"Verifying token: {token}")
+
         # Step 1: Fetch JWKS
         jwks = requests.get(KEYCLOAK_JWKS_URL).json()
         unverified_header = jwt.get_unverified_header(token)
@@ -56,9 +61,11 @@ def verify_token(token: str) -> str:
                 break
 
         if public_key is None:
+            auth_logger.error("Public key not found for the given token.")
             raise HTTPException(status_code=401, detail="Public key not found")
 
         # Step 3: Decode token
+        auth_logger.debug(f"Public key found: {public_key}")
         payload = jwt.decode(
             token,
             key=public_key,
@@ -66,15 +73,24 @@ def verify_token(token: str) -> str:
             audience=AUDIENCE,
             issuer=KEYCLOAK_ISSUER
         )
+        # Step 4: Check roles if requested
+        if requested_role:
+            auth_logger.debug(f"Requested role: {requested_role}")
+            roles = payload.get("resource_access", {}).get(KEYCLOAK_CLIENT_ID, {}).get("roles", [])
+            if requested_role not in roles:
+                auth_logger.error(f"User does not have the required role: {requested_role}")
+                raise HTTPException(status_code=403, detail="Insufficient permissions")
 
         return payload.get("preferred_username", payload.get("sub"))
 
     except ExpiredSignatureError:
+        auth_logger.info("Token expired")
         raise HTTPException(status_code=401, detail="Token expired")
     except JWTError as e:
+        auth_logger.error(f"JWT error: {str(e)}")
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
     except Exception as e:
-        # Print everythin in the error, including the stack trace
+        # Print everything in the error, including the stack trace
         import traceback
         traceback.print_exc()
 

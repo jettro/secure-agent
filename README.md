@@ -33,6 +33,11 @@ https://darkaico.medium.com/building-a-secure-authentication-system-with-keycloa
 
 
 ## Running the application
+Running the application is as simple as running the following command:
+
+```bash
+uvicorn secureagent.human_resource:app --reload --port 8001
+```
 
 # TODO
 - Implement Axios interceptor to add the access token to the request headers
